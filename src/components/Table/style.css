@@ -1,0 +1,144 @@
+.el-table {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  color: var(--el-text-color-primary);
+  font-size: var(--el-font-size-base);
+  background: var(--el-fill-color-blank);
+}
+
+.el-table__inner {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.el-table__cell {
+  box-sizing: border-box;
+  height: 48px;
+  padding: 10px 12px;
+  border-bottom: var(--el-border);
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+.el-table__header .el-table__cell {
+  color: var(--el-text-color-secondary);
+  font-weight: var(--el-font-weight-primary);
+  background: var(--el-fill-color-light);
+}
+
+.el-table__body .el-table__row {
+  transition: background-color var(--el-transition-duration-fast);
+}
+
+.el-table__body .el-table__row:hover > .el-table__cell {
+  background: var(--el-fill-color-light);
+}
+
+.el-table__body .el-table__row.is-selected > .el-table__cell {
+  background: #ecf5ff;
+}
+
+.el-table--striped .el-table__body .el-table__row:nth-child(even) > .el-table__cell {
+  background: var(--el-fill-color-lighter);
+}
+
+.el-table--striped .el-table__body .el-table__row.is-selected > .el-table__cell {
+  background: #ecf5ff;
+}
+
+.el-table--border {
+  border: var(--el-border);
+  border-bottom: 0;
+}
+
+.el-table--border .el-table__cell:not(:last-child) {
+  border-right: var(--el-border);
+}
+
+.el-table__cell.is-left {
+  text-align: left;
+}
+
+.el-table__cell.is-center {
+  text-align: center;
+}
+
+.el-table__cell.is-right {
+  text-align: right;
+}
+
+.el-table__checkbox {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: var(--el-color-primary);
+  cursor: pointer;
+}
+
+.el-table__checkbox:disabled {
+  cursor: not-allowed;
+}
+
+.el-table__sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.el-table__sort-button:hover {
+  color: var(--el-color-primary);
+}
+
+.el-table__sort-caret {
+  position: relative;
+  display: inline-block;
+  width: 12px;
+  height: 16px;
+}
+
+.el-table__sort-caret::before,
+.el-table__sort-caret::after {
+  position: absolute;
+  left: 2px;
+  width: 0;
+  height: 0;
+  content: '';
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+.el-table__sort-caret::before {
+  top: 1px;
+  border-bottom: 5px solid var(--el-text-color-placeholder);
+}
+
+.el-table__sort-caret::after {
+  bottom: 1px;
+  border-top: 5px solid var(--el-text-color-placeholder);
+}
+
+.el-table__sort-caret.is-ascending::before {
+  border-bottom-color: var(--el-color-primary);
+}
+
+.el-table__sort-caret.is-descending::after {
+  border-top-color: var(--el-color-primary);
+}
+
+.el-table__empty {
+  height: 60px;
+  color: var(--el-text-color-secondary);
+  text-align: center;
+  border-bottom: var(--el-border);
+}

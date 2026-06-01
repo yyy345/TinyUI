@@ -1,0 +1,126 @@
+.el-dialog-fade-enter-active,
+.el-dialog-fade-leave-active {
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.el-dialog-fade-enter-from,
+.el-dialog-fade-leave-to {
+  opacity: 0;
+}
+
+.el-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.el-dialog__overlay {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at top, rgba(64, 158, 255, 0.16), transparent 36%),
+    rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+.el-dialog__wrapper {
+  position: relative;
+  min-height: 100%;
+  pointer-events: none;
+}
+
+.el-dialog__content {
+  position: relative;
+  margin: 15vh auto 50px;
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow:
+    0 24px 60px rgba(15, 23, 42, 0.22),
+    0 8px 20px rgba(15, 23, 42, 0.08);
+  pointer-events: auto;
+  overflow: hidden;
+  max-width: calc(100vw - 32px);
+}
+
+.el-dialog__content.is-center {
+  text-align: center;
+}
+
+.el-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 14px;
+  font-size: 18px;
+  font-weight: 600;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border-bottom: 1px solid #eef2f6;
+}
+
+.el-dialog__header.is-draggable {
+  cursor: move;
+  user-select: none;
+}
+
+.el-dialog__title {
+  color: #1f2d3d;
+  letter-spacing: 0.01em;
+}
+
+.el-dialog__headerbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: #7b8794;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 999px;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.el-dialog__headerbtn:hover {
+  color: #409eff;
+  background-color: rgba(64, 158, 255, 0.08);
+  transform: rotate(90deg);
+}
+
+.el-dialog__body {
+  padding: 20px 24px 24px;
+  color: #52606d;
+  line-height: 1.75;
+  background: #fff;
+}
+
+.el-dialog__footer {
+  padding: 0 24px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.72) 0%, #ffffff 100%);
+}
+
+@media (max-width: 768px) {
+  .el-dialog__content {
+    margin: 8vh auto 24px;
+    width: calc(100vw - 24px) !important;
+    border-radius: 16px;
+  }
+
+  .el-dialog__header {
+    padding: 18px 18px 12px;
+  }
+
+  .el-dialog__body {
+    padding: 18px;
+  }
+
+  .el-dialog__footer {
+    padding: 0 18px 18px;
+    flex-wrap: wrap;
+  }
+}
