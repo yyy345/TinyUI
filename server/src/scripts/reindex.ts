@@ -1,8 +1,9 @@
-import { ensureConfig } from '../config.js'
+import { ensureConfig, ensureEmbeddingConfig } from '../config.js'
 import { reindexKnowledge } from '../services/rag.js'
 
 const main = async () => {
   ensureConfig()
+  ensureEmbeddingConfig()
   const result = await reindexKnowledge()
   console.log(`Indexed ${result.totalChunks} chunks with vector size ${result.vectorSize}.`)
 }

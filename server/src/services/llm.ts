@@ -1,53 +1,66 @@
-﻿import { config } from '../config.js'
+import { config } from '../config.js'
 import type { ChatTurn, SearchResult } from '../types.js'
 import { OpenAICompatibleClient } from './openai-compatible.js'
 
 const client = new OpenAICompatibleClient(config.llmBaseUrl, config.llmApiKey)
 
-const formatContext = (results: SearchResult[]) =>
-  results
-    .map((item, index) => {
-      return [
-        `\u3010\u8d44\u6599 ${index + 1}\u3011`,
-        `\u7ec4\u4ef6: ${item.component}`,
-        `\u6807\u9898: ${item.title}`,
-        `\u7c7b\u578b: ${item.sourceType}`,
-        `\u6587\u4ef6: ${item.filePath}`,
-        `\u8def\u7531: ${item.route}`,
-        '\u5185\u5bb9:',
-        item.text
-      ].join('\n')
-    })
-    .join('\n\n')
+const formatContext = (results: SearchResult[], pageContent?: string) => {
+  const documents = results.map((item, index) => [
+    `【资料 ${index + 1}】`,
+    `组件：${item.component}`,
+    `标题：${item.title}`,
+    `路由：${item.route}`,
+    item.text
+  ].join('\n'))
+  if (pageContent) documents.unshift(`【当前页面可见内容】\n${pageContent.slice(0, 6000)}`)
+  return documents.join('\n\n') || '未检索到相关文档。'
+}
 
+const buildMessages = (
+  history: ChatTurn[],
+  results: SearchResult[],
+  page?: string,
+  component?: string,
+  pageContent?: string
+) => [{
+  role: 'system',
+  content: [
+    '你是 TinyElement 组件库官方网站的 AI 技术助手，帮助开发者理解和使用当前组件库。',
+    '回答规则：',
+    '1. 优先且严格依据提供的组件库文档，不得编造 Props、Events、Slots 或 API。',
+    '2. 文档没有相关内容时，明确回答“当前文档中未找到相关说明”。',
+    '3. 使用问题优先给出可运行的 Vue 3 代码示例；组件标签、导入路径和 API 必须原样沿用资料中的写法，禁止自行改名。',
+    '4. 先给结论再解释，API 名称用行内代码突出；不要重复输出参考来源列表，界面会单独展示。',
+    '5. 当前页面存在组件时优先结合该组件；拒绝与 TinyElement 完全无关的问题。',
+    `当前页面：${page || '未知'}`,
+    `当前组件：${component || '未知'}`,
+    '', '组件库相关文档：', formatContext(results, pageContent)
+  ].join('\n')
+}, ...history.slice(-10)]
+
+export const streamAnswer = async (
+  history: ChatTurn[],
+  results: SearchResult[],
+  options: {
+    page?: string
+    component?: string
+    pageContent?: string
+    signal: AbortSignal
+    onDelta: (content: string) => void
+  }
+) => client.streamChatCompletion(
+  config.llmModel,
+  buildMessages(history, results, options.page, options.component, options.pageContent),
+  options.signal,
+  options.onDelta
+)
+
+// 保留给可选的 Qdrant 索引实验使用；默认问答链路走上面的真实流式接口。
 export const generateAnswer = async (
   question: string,
   results: SearchResult[],
   history: ChatTurn[] = []
-) => {
-  const historyMessages = history.slice(-6).flatMap((turn) => {
-    return [{ role: turn.role, content: turn.content }]
-  })
-
-  return await client.chatCompletion(config.llmModel, [
-    {
-      role: 'system',
-      content: [
-        '\u4f60\u662f TinyElement \u7ec4\u4ef6\u5e93\u7684 AI \u6587\u6863\u52a9\u624b\u3002',
-        '\u4f60\u53ea\u80fd\u4f9d\u636e\u7ed9\u5b9a\u8d44\u6599\u56de\u7b54\uff0c\u4e0d\u8981\u7f16\u9020\u4e0d\u5b58\u5728\u7684\u7ec4\u4ef6\u80fd\u529b\u3002',
-        '\u5982\u679c\u8d44\u6599\u4e0d\u8db3\uff0c\u8bf7\u660e\u786e\u8bf4\u201c\u5f53\u524d\u77e5\u8bc6\u5e93\u91cc\u6ca1\u6709\u627e\u5230\u8db3\u591f\u4fe1\u606f\u201d\u3002',
-        '\u8bf7\u4f18\u5148\u7ed9\u51fa\u7b80\u6d01\u3001\u53ef\u6267\u884c\u7684\u56de\u7b54\uff0c\u5e76\u5728\u6700\u540e\u5355\u72ec\u5217\u51fa\u201c\u53c2\u8003\u6765\u6e90\uff1a\u201d\u53ca\u5f15\u7528\u7684\u8d44\u6599\u7f16\u53f7\u3002'
-      ].join('\n')
-    },
-    ...historyMessages,
-    {
-      role: 'user',
-      content: [
-        `\u7528\u6237\u95ee\u9898\uff1a${question}`,
-        '',
-        '\u8bf7\u4ec5\u57fa\u4e8e\u4e0b\u9762\u7684\u9879\u76ee\u8d44\u6599\u56de\u7b54\uff1a',
-        formatContext(results)
-      ].join('\n')
-    }
-  ])
-}
+) => client.chatCompletion(
+  config.llmModel,
+  buildMessages([...history, { role: 'user', content: question }], results)
+)

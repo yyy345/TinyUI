@@ -26,6 +26,13 @@ if (fs.existsSync(envFile)) {
 }
 
 const getEnv = (key: string, fallback = '') => process.env[key]?.trim() || fallback
+const getFirstEnv = (keys: string[], fallback = '') => {
+  for (const key of keys) {
+    const value = getEnv(key)
+    if (value) return value
+  }
+  return fallback
+}
 
 export const config = {
   port: Number(getEnv('RAG_PORT', getEnv('AI_SERVER_PORT', '3030'))),
@@ -38,17 +45,19 @@ export const config = {
   embeddingBaseUrl: getEnv('EMBEDDING_BASE_URL', 'https://dashscope.aliyuncs.com/compatible-mode/v1'),
   embeddingApiKey: getEnv('EMBEDDING_API_KEY'),
   embeddingModel: getEnv('EMBEDDING_MODEL', 'text-embedding-v4'),
-  llmBaseUrl: getEnv('LLM_BASE_URL', 'https://dashscope.aliyuncs.com/compatible-mode/v1'),
-  llmApiKey: getEnv('LLM_API_KEY'),
-  llmModel: getEnv('LLM_MODEL', 'qwen-plus')
+  llmBaseUrl: getFirstEnv(['LLM_BASE_URL', 'OPENAI_BASE_URL'], 'https://api.deepseek.com'),
+  llmApiKey: getFirstEnv(['LLM_API_KEY', 'OPENAI_API_KEY']),
+  llmModel: getFirstEnv(['LLM_MODEL', 'OPENAI_MODEL'], 'deepseek-v4-flash')
 }
 
 export const ensureConfig = () => {
+  if (!config.llmApiKey) {
+    throw new Error('Missing LLM_API_KEY (or OPENAI_API_KEY) environment variable.')
+  }
+}
+
+export const ensureEmbeddingConfig = () => {
   if (!config.embeddingApiKey) {
     throw new Error('Missing EMBEDDING_API_KEY environment variable.')
-  }
-
-  if (!config.llmApiKey) {
-    throw new Error('Missing LLM_API_KEY environment variable.')
   }
 }

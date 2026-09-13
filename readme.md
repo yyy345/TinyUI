@@ -197,14 +197,16 @@ Message.success('操作成功')
 
 这类组件适合用来理解 Vue 应用上下文、动态渲染、实例销毁、队列管理和全局方法挂载。
 
-## 规划中：RAG 文档问答服务 - 实现AI辅助对话
+## AI 组件助手
 
-注意：RAG 文档问答目前还没有完整实现，`server/` 目录主要作为后续预研入口。目标是把组件文档构建成可检索知识库，再提供面向文档的问答能力。
+文档站右下角提供 AI 组件助手。它会结合当前路由和页面内容，在服务端检索 Markdown 文档、Vue 示例与 TypeScript 类型定义，并通过 SSE 实时返回回答。API Key 仅存放在 `server/.env`，不会暴露给浏览器。
 
-<!-- 目前保留的相关命令如下，后续完成实现后可用于检查配置、构建索引和启动服务：
+首次使用时复制 `server/.env.example` 为 `server/.env`，填写 DeepSeek 平台的 `LLM_API_KEY`。默认接口为 `https://api.deepseek.com`，模型为 `deepseek-v4-flash`，然后分别启动 AI 服务和文档站：
+
 ```shell
-npm run server:build
-npm run rag:doctor
-npm run rag:index
-npm run server:start
-``` -->
+npm run ai:doctor
+npm run ai:start
+npm run docs:dev
+```
+
+默认问答链路使用轻量级本地关键词检索，不依赖 Qdrant。仓库仍保留 `npm run rag:index`，用于后续学习和试验 Embedding + Qdrant 向量检索。

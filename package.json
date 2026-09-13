@@ -24,6 +24,8 @@
     "preview": "vite preview",
     "server:build": "tsc -p server/tsconfig.json",
     "server:start": "npm run server:build && node server/dist/app.js",
+    "ai:start": "npm run server:start",
+    "ai:doctor": "npm run server:build && node server/dist/scripts/doctor.js",
     "rag:doctor": "npm run server:build && node server/dist/scripts/doctor.js",
     "rag:index": "npm run server:build && node server/dist/scripts/reindex.js",
     "docs:dev": "vitepress dev docs",

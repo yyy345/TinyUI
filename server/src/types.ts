@@ -4,9 +4,18 @@ export interface ChatTurn {
 }
 
 export interface ChatRequestBody {
-  question: string
-  history?: ChatTurn[]
-  route?: string
+  messages: ChatTurn[]
+  page?: string
+  component?: string
+  pageContent?: string
+  context?: KnowledgeChunk[]
+}
+
+export interface DocumentSource {
+  title: string
+  url: string
+  component: string
+  sourceType: KnowledgeChunk['sourceType'] | 'page'
 }
 
 export interface KnowledgeChunk {
